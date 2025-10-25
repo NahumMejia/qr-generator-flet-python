@@ -6,7 +6,7 @@ import os
 
 def main(page: ft.Page):
     page.title = "QR Code Generator"
-    page.scroll = None
+    page.scroll = ft.ScrollMode.AUTO
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.padding = 12
 
@@ -31,54 +31,55 @@ def main(page: ft.Page):
 
     app_logo = ft.Image(
         src_base64=icon_b64 if icon_b64 else None,
-        width=140,
-        height=140,
+        width=150,
+        height=150,
         fit=ft.ImageFit.CONTAIN
     )
 
     # Title 
-    title_text = ft.Text(value="Wisecode QR Code Generator", size=30, weight=ft.FontWeight.W_100)
+    title_text = ft.Text(value="Wisecode QR Code Generator", size=20, weight=ft.FontWeight.W_100)
 
     # Header 
     header = ft.Column(
         [app_logo, title_text],
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        spacing=2,   # casi pegado
+        spacing=1,
     )
 
     # URL input
     url_input = ft.TextField(
         label="URL",
-        width=360,
+        width=260,
         hint_text="https://example.com",
         dense=True
     )
 
     # Dropdowns
     background_color_dropdown = ft.Dropdown(
-        label="Background", width=140, value="white", dense=True,
+        label="Background", width=110, value="white", dense=True,
         options=[ft.dropdown.Option(key=c, text=c.capitalize()) for c in colors.keys()]
     )
     code_color_dropdown = ft.Dropdown(
-        label="Code color", width=140, value="black", dense=True,
+        label="Code color", width=110, value="black", dense=True,
         options=[ft.dropdown.Option(key=c, text=c.capitalize()) for c in colors.keys()]
     )
     border_dropdown = ft.Dropdown(
-        label="Border", width=110, value="4", dense=True,
+        label="Border", width=100, value="2", dense=True,
         options=[ft.dropdown.Option(key=str(n), text=str(n)) for n in (1,2,3,4,5,6,8)]
     )
 
     controls_row = ft.Row(
         controls=[background_color_dropdown, code_color_dropdown, border_dropdown],
         alignment=ft.MainAxisAlignment.CENTER,
-        spacing=8
+        spacing=6
     )
+    controls_row.wrap = True
 
     # Preview
     preview_title = ft.Text("QR Preview", size=16, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER)
-    preview_content = ft.Text("Generate to see the QR code", size=13, text_align=ft.TextAlign.CENTER, color=ft.Colors.GREY_600)
+    preview_content = ft.Text("Click Generate to see the code", size=13, text_align=ft.TextAlign.CENTER, color=ft.Colors.GREY_600)
     preview_box = ft.Container(
-        content=preview_content, width=150, height=150,
+        content=preview_content, width=100, height=100,
         border=ft.border.all(2, ft.Colors.GREY_400),
         alignment=ft.alignment.center, bgcolor=ft.Colors.GREY_100
     )
@@ -109,7 +110,7 @@ def main(page: ft.Page):
             img_base64 = base64.b64encode(buffer.read()).decode()
 
             preview_box.content = ft.Image(
-                src_base64=img_base64, width=200, height=200, fit=ft.ImageFit.CONTAIN
+                src_base64=img_base64, width=100, height=100, fit=ft.ImageFit.CONTAIN
             )
             page.snack_bar = ft.SnackBar(content=ft.Text(f"QR generated: {code_color_dropdown.value} on {background_color_dropdown.value}"))
             page.snack_bar.open = True; page.update()
@@ -132,28 +133,27 @@ def main(page: ft.Page):
             page.snack_bar.open = True; page.update()
 
     # Buttons
-    generate_button = ft.ElevatedButton(text="GENERATE", icon=ft.Icons.QR_CODE, width=160, on_click=generate_qr, bgcolor=ft.Colors.BLUE, color=ft.Colors.WHITE)
-    download_button = ft.ElevatedButton(text="DOWNLOAD", icon=ft.Icons.DOWNLOAD, width=160, on_click=download_qr, bgcolor=ft.Colors.GREEN, color=ft.Colors.WHITE)
+    generate_button = ft.ElevatedButton(text="GENERATE", icon=ft.Icons.QR_CODE, width=140, on_click=generate_qr, bgcolor=ft.Colors.BLUE, color=ft.Colors.WHITE)
+    download_button = ft.ElevatedButton(text="DOWNLOAD", icon=ft.Icons.DOWNLOAD, width=140, on_click=download_qr, bgcolor=ft.Colors.GREEN, color=ft.Colors.WHITE)
 
     buttons_row = ft.Row(
         controls=[generate_button, download_button],
         alignment=ft.MainAxisAlignment.CENTER,
-        spacing=8
+        spacing=6
     )
+    buttons_row.wrap = True
 
     # Layout
     page.add(
         header,
-        ft.Container(height=6),
-        url_input,
-        ft.Container(height=6),
-        controls_row,
-        ft.Container(height=8),
-        buttons_row,
-        ft.Container(height=8),
-        preview_title,
         ft.Container(height=4),
-        preview_box
+        url_input,
+        ft.Container(height=4),
+        controls_row,
+        ft.Container(height=6),
+        preview_title,
+        preview_box,
+        buttons_row,
     )
 
 ft.app(target=main)
